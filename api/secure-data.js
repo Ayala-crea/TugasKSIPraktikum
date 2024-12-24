@@ -1,4 +1,4 @@
-const allowedIPs = ['127.0.0.1', '103.139.10.11'];
+const allowedIPs = ['127.0.0.1', '103.139.10.11', '119.235.218.170'];
 
 const handler = (req, res) => {
     const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
