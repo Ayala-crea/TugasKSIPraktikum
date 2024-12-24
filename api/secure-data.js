@@ -1,22 +1,14 @@
-const express = require('express');
-const path = require('path');
-const cors = require('cors');
-const ipWhitelistMiddleware = require('./ip-whitelist');
+const allowedIPs = ['127.0.0.1', '103.139.10.11'];
 
-const app = express();
-const PORT = 3000;
+const handler = (req, res) => {
+    const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    const formattedIP = clientIP.replace('::ffff:', '').split(',')[0].trim();
 
-// Middleware
-app.use(cors({
-    origin: 'http://127.0.0.1:5501' // Izinkan hanya dari Live Server
-}));
-app.use(express.json());
-app.use(express.static(path.join(__dirname, '../public')));
-app.use('/api', ipWhitelistMiddleware); // Apply IP whitelist to API routes
+    if (!allowedIPs.includes(formattedIP)) {
+        return res.status(403).json({ message: 'Access forbidden: Your IP is not allowed' });
+    }
 
-// API Endpoints
-app.get('/api/secure-data', (req, res) => {
-    res.json({
+    res.status(200).json({
         message: 'This is secure data accessible only from allowed IPs.',
         riskAssessment: {
             STRIDE: {
@@ -37,14 +29,6 @@ app.get('/api/secure-data', (req, res) => {
             },
         },
     });
-});
+};
 
-// Serve frontend
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/index.html'));
-});
-
-// Start Server
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
+export default handler;
