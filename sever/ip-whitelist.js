@@ -1,4 +1,4 @@
-const allowedIPs = ['127.0.0.1', '::1'];
+const allowedIPs = ['127.0.0.1', '103.139.10.11'];
 
 
 const ipWhitelistMiddleware = (req, res, next) => {
