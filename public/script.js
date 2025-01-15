@@ -20,24 +20,26 @@ document.getElementById('check-ip').addEventListener('click', () => {
         });
 });
 
-document.getElementById('check-ip-success').addEventListener('click', () => {
-    const ip = document.getElementById('input-ip-success').value.trim();
-    if (!ip) {
-        document.getElementById('output-success').textContent = 'Please enter a valid IP address.';
-        return;
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('check-ip-success').addEventListener('click', () => {
+        const ip = document.getElementById('input-ip-success').value.trim();
+        if (!ip) {
+            document.getElementById('output-success').textContent = 'Please enter a valid IP address.';
+            return;
+        }
 
-    fetch(`/api/secure-data?ip=${ip}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Access forbidden: The provided IP is not allowed.');
-            }
-            return response.json();
-        })
-        .then(data => {
-            document.getElementById('output-success').textContent = JSON.stringify(data, null, 2);
-        })
-        .catch(error => {
-            document.getElementById('output-success').textContent = error.message;
-        });
+        fetch(`/api/secure-data?ip=${ip}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Access forbidden: The provided IP is not allowed.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('output-success').textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                document.getElementById('output-success').textContent = error.message;
+            });
+    });
 });
