@@ -3,13 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Web App</title>
+    <title>Secure Web App - IP Restriction Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background: #333;
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+        }
+        .container {
+            margin: 20px auto;
+            max-width: 800px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .tab-header {
+            display: flex;
+            justify-content: space-around;
+            background: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        .tab-header div {
+            padding: 1rem;
+            flex: 1;
+            text-align: center;
+            transition: background 0.3s;
+        }
+        .tab-header div:hover {
+            background: #0056b3;
+        }
+        .tab-header .active {
+            background: #0056b3;
+        }
+        .tab-content {
+            display: none;
+            padding: 20px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        pre {
+            background: #f0f0f0;
+            padding: 10px;
+            overflow: auto;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <h1>Secure Web Application</h1>
-    <button id="fetch-data">Fetch Secure Data</button>
-    <pre id="output"></pre>
+    <header>
+        <h1>Secure Web Application - IP Restriction Demo</h1>
+    </header>
 
-    <script src="script.js"></script>
+    <div class="container">
+        <div class="tab-header">
+            <div class="tab-link active" data-tab="success-page">Access Success</div>
+            <div class="tab-link" data-tab="failure-page">Access Failure</div>
+        </div>
+
+        <div id="success-page" class="tab-content active">
+            <h2>Endpoint Access Granted</h2>
+            <p>Click the button below to fetch secure data. This page simulates an access attempt from an allowed IP.</p>
+            <button id="fetch-data-success">Fetch Secure Data</button>
+            <pre id="output-success">Response will appear here...</pre>
+        </div>
+
+        <div id="failure-page" class="tab-content">
+            <h2>Endpoint Access Denied</h2>
+            <p>This page simulates an access attempt from a disallowed IP. Click the button below to see the response.</p>
+            <button id="fetch-data-failure">Simulate Access Failure</button>
+            <pre id="output-failure">Response will appear here...</pre>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching logic
+        const tabs = document.querySelectorAll('.tab-link');
+        const contents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
+            });
+        });
+
+        // Fetch data for success page
+        document.getElementById('fetch-data-success').addEventListener('click', () => {
+            fetch('/api/secure-data')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Access denied or an error occurred.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('output-success').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    document.getElementById('output-success').textContent = error.message;
+                });
+        });
+
+        // Simulate failure
+        document.getElementById('fetch-data-failure').addEventListener('click', () => {
+            fetch('/api/secure-data')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Access forbidden: Your IP is not allowed');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('output-failure').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    document.getElementById('output-failure').textContent = error.message;
+                });
+        });
+    </script>
 </body>
 </html>
