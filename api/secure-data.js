@@ -4,8 +4,14 @@ const handler = (req, res) => {
     const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     const formattedIP = clientIP.replace('::ffff:', '').split(',')[0].trim();
 
-    if (!allowedIPs.includes(formattedIP)) {
-        return res.status(403).json({ message: 'Access forbidden: Your IP is not allowed' });
+    // Periksa apakah simulasi kegagalan diaktifkan
+    const simulateFailure = req.query.simulateFailure === 'true';
+
+    if (simulateFailure || !allowedIPs.includes(formattedIP)) {
+        return res.status(403).json({ 
+            message: 'Access forbidden: Your IP is not allowed',
+            simulated: simulateFailure ? 'This is a simulated failure' : 'Real IP validation failed',
+        });
     }
 
     res.status(200).json({
