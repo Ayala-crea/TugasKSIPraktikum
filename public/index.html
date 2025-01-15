@@ -69,6 +69,13 @@
         button:hover {
             background: #0056b3;
         }
+        input {
+            padding: 10px;
+            width: calc(100% - 22px);
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -84,15 +91,17 @@
 
         <div id="success-page" class="tab-content active">
             <h2>Endpoint Access Granted</h2>
-            <p>Click the button below to fetch secure data. This page simulates an access attempt from an allowed IP.</p>
-            <button id="fetch-data-success">Fetch Secure Data</button>
+            <p>Input an IP address below to check its access status (for registered IPs):</p>
+            <input type="text" id="input-ip-success" placeholder="Enter IP address" />
+            <button id="check-ip-success">Check Access</button>
             <pre id="output-success">Response will appear here...</pre>
         </div>
 
         <div id="failure-page" class="tab-content">
             <h2>Endpoint Access Denied</h2>
-            <p>This page simulates an access attempt from a disallowed IP. Click the button below to see the response.</p>
-            <button id="fetch-data-failure">Simulate Access Failure</button>
+            <p>Input an IP address below to check its access status:</p>
+            <input type="text" id="input-ip" placeholder="Enter IP address" />
+            <button id="check-ip">Check Access</button>
             <pre id="output-failure">Response will appear here...</pre>
         </div>
     </div>
@@ -129,12 +138,18 @@
                 });
         });
 
-        // Simulate failure
-        document.getElementById('fetch-data-failure').addEventListener('click', () => {
-            fetch('/api/secure-data')
+        // Check IP access for failure page
+        document.getElementById('check-ip').addEventListener('click', () => {
+            const ip = document.getElementById('input-ip').value.trim();
+            if (!ip) {
+                document.getElementById('output-failure').textContent = 'Please enter a valid IP address.';
+                return;
+            }
+
+            fetch(`/api/secure-data?ip=${ip}`)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Access forbidden: Your IP is not allowed');
+                        throw new Error('Access forbidden: The provided IP is not allowed.');
                     }
                     return response.json();
                 })

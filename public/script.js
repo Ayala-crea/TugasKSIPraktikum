@@ -1,8 +1,14 @@
-document.getElementById('fetch-data-failure').addEventListener('click', () => {
-    fetch('/api/secure-data?simulateFailure=true')
+document.getElementById('check-ip').addEventListener('click', () => {
+    const ip = document.getElementById('input-ip').value.trim();
+    if (!ip) {
+        document.getElementById('output-failure').textContent = 'Please enter a valid IP address.';
+        return;
+    }
+
+    fetch(`/api/secure-data?ip=${ip}`)
         .then(response => {
             if (!response.ok) {
-                throw new Error('Access forbidden: Simulated failure. Your IP is not allowed');
+                throw new Error('Access forbidden: The provided IP is not allowed.');
             }
             return response.json();
         })
