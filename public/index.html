@@ -85,12 +85,12 @@
 
     <div class="container">
         <div class="tab-header">
-            <div class="tab-link active" data-tab="success-page">Access Success</div>
-            <div class="tab-link" data-tab="failure-page">Access Failure</div>
+            <div class="tab-link active" data-tab="success-page">Access Failure</div>
+            <div class="tab-link" data-tab="failure-page">Access Success</div>
         </div>
 
         <div id="success-page" class="tab-content active">
-            <h2>Endpoint Access Granted</h2>
+            <h2>Endpoint Access Denied</h2>
             <p>Input an IP address below to check its access status (for registered IPs):</p>
             <input type="text" id="input-ip-success" placeholder="Enter IP address" />
             <button id="check-ip-success">Check Access</button>
@@ -98,7 +98,7 @@
         </div>
 
         <div id="failure-page" class="tab-content">
-            <h2>Endpoint Access Denied</h2>
+            <h2>Endpoint Access Granted</h2>
             <p>Input an IP address below to check its access status:</p>
             <input type="text" id="input-ip" placeholder="Enter IP address" />
             <button id="check-ip">Check Access</button>
