@@ -76,6 +76,32 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+        .cards-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .card {
+            flex: 1;
+            padding: 15px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .card h3 {
+            margin-top: 0;
+        }
+        .card ul {
+            padding-left: 20px;
+        }
+        .card ul li {
+            margin-bottom: 10px;
+        }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -94,7 +120,7 @@
             <p>Input an IP address below to check its access status (for registered IPs):</p>
             <input type="text" id="input-ip-success" placeholder="Enter IP address" />
             <button id="check-ip-success">Check Access</button>
-            <pre id="output-success">Response will appear here...</pre>            
+            <pre id="output-success" class="hidden">Response will appear here...</pre>            
         </div>
 
         <div id="failure-page" class="tab-content">
@@ -102,7 +128,32 @@
             <p>Input an IP address below to check its access status:</p>
             <input type="text" id="input-ip" placeholder="Enter IP address" />
             <button id="check-ip">Check Access</button>
-            <pre id="output-failure">Response will appear here...</pre>
+            <pre id="output-failure" class="hidden">Response will appear here...</pre>
+        </div>
+
+        <!-- Additional Cards Section -->
+        <div class="cards-container">
+            <div class="card">
+                <h3>Stride Threat Model</h3>
+                <ul>
+                    <li>Enter relevant details for STRIDE analysis.</li>
+                    <li>Identify potential threats based on categories.</li>
+                    <li>Evaluate the system for vulnerabilities.</li>
+                </ul>
+
+                <pre id="output-stride" class="hidden">STRIDE results will appear here...</pre>
+            </div>
+
+            <div class="card">
+                <h3>DREAD Risk Assessment</h3>
+                <ul>
+                    <li>Input parameters for DREAD assessment.</li>
+                    <li>Analyze potential risks and their impacts.</li>
+                    <li>Prioritize risks based on scoring.</li>
+                </ul>
+
+                <pre id="output-dread" class="hidden">DREAD results will appear here...</pre>
+            </div>
         </div>
     </div>
 
@@ -123,26 +174,12 @@
 
         // Fetch data for success page
         document.getElementById('check-ip-success').addEventListener('click', () => {
-            fetch('/api/secure-data')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Access denied or an error occurred.');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    document.getElementById('output-success').textContent = JSON.stringify(data, null, 2);
-                })
-                .catch(error => {
-                    document.getElementById('output-success').textContent = error.message;
-                });
-        });
+            const output = document.getElementById('output-success');
+            const ip = document.getElementById('input-ip-success').value.trim();
+            output.classList.remove('hidden');
 
-        // Check IP access for failure page
-        document.getElementById('check-ip').addEventListener('click', () => {
-            const ip = document.getElementById('input-ip').value.trim();
             if (!ip) {
-                document.getElementById('output-failure').textContent = 'Please enter a valid IP address.';
+                output.textContent = 'Please enter a valid IP address.';
                 return;
             }
 
@@ -154,11 +191,67 @@
                     return response.json();
                 })
                 .then(data => {
-                    document.getElementById('output-failure').textContent = JSON.stringify(data, null, 2);
+                    output.textContent = JSON.stringify(data, null, 2);
                 })
                 .catch(error => {
-                    document.getElementById('output-failure').textContent = error.message;
+                    output.textContent = error.message;
                 });
+        });
+
+        // Check IP access for failure page
+        document.getElementById('check-ip').addEventListener('click', () => {
+            const output = document.getElementById('output-failure');
+            const ip = document.getElementById('input-ip').value.trim();
+            output.classList.remove('hidden');
+
+            if (!ip) {
+                output.textContent = 'Please enter a valid IP address.';
+                return;
+            }
+
+            fetch(`/api/secure-data?ip=${ip}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Access forbidden: The provided IP is not allowed.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    output.textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    output.textContent = error.message;
+                });
+        });
+
+        // Run STRIDE analysis
+        document.getElementById('check-stride').addEventListener('click', () => {
+            const output = document.getElementById('output-stride');
+            const strideData = document.getElementById('input-stride').value.trim();
+            output.classList.remove('hidden');
+
+            if (!strideData) {
+                output.textContent = 'Please enter data for STRIDE analysis.';
+                return;
+            }
+
+            // Simulate STRIDE analysis
+            output.textContent = `Performing STRIDE analysis on: ${strideData}`;
+        });
+
+        // Run DREAD assessment
+        document.getElementById('check-dread').addEventListener('click', () => {
+            const output = document.getElementById('output-dread');
+            const dreadData = document.getElementById('input-dread').value.trim();
+            output.classList.remove('hidden');
+
+            if (!dreadData) {
+                output.textContent = 'Please enter data for DREAD assessment.';
+                return;
+            }
+
+            // Simulate DREAD assessment
+            output.textContent = `Performing DREAD assessment on: ${dreadData}`;
         });
     </script>
 </body>

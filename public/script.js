@@ -1,7 +1,10 @@
 document.getElementById('check-ip-success').addEventListener('click', () => {
+    const output = document.getElementById('output-success');
     const ip = document.getElementById('input-ip-success').value.trim();
+    output.classList.remove('hidden');
+
     if (!ip) {
-        document.getElementById('output-success').textContent = 'Please enter a valid IP address.';
+        output.textContent = 'Please enter a valid IP address.';
         return;
     }
 
@@ -13,33 +16,34 @@ document.getElementById('check-ip-success').addEventListener('click', () => {
             return response.json();
         })
         .then(data => {
-            document.getElementById('output-success').textContent = JSON.stringify(data, null, 2);
+            output.textContent = JSON.stringify(data, null, 2);
         })
         .catch(error => {
-            document.getElementById('output-success').textContent = error.message;
+            output.textContent = error.message;
         });
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('check-ip').addEventListener('click', () => {
-        const ip = document.getElementById('input-ip').value.trim();
-        if (!ip) {
-            document.getElementById('output-failure').textContent = 'Please enter a valid IP address.';
-            return;
-        }
+document.getElementById('check-ip').addEventListener('click', () => {
+    const output = document.getElementById('output-failure');
+    const ip = document.getElementById('input-ip').value.trim();
+    output.classList.remove('hidden');
 
-        fetch(`/api/secure-data?ip=${ip}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Access forbidden: The provided IP is not allowed.');
-                }
-                return response.json();
-            })
-            .then(data => {
-                document.getElementById('output-failure').textContent = JSON.stringify(data, null, 2);
-            })
-            .catch(error => {
-                document.getElementById('output-failure').textContent = error.message;
-            });
-    });
+    if (!ip) {
+        output.textContent = 'Please enter a valid IP address.';
+        return;
+    }
+
+    fetch(`/api/secure-data?ip=${ip}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Access forbidden: The provided IP is not allowed.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            output.textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(error => {
+            output.textContent = error.message;
+        });
 });
